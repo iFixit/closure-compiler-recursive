@@ -7,3 +7,8 @@ when compiling the contents of a directory recursively.
 Usage:
 
     bin/closure-compiler-recursive /path/to/closure-compiler.jar /directory/to/compress
+
+Requirements:
+
+This depends on the closure compiler JAR from google:
+    CLASS_PATH=./closure-compiler-v20170910.jar
