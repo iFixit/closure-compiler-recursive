@@ -1,0 +1,6 @@
+#!/bin/bash -ex
+
+rm -rf compressed || true
+cp -r input compressed
+CLASSPATH=../closure-compiler-v20170910.jar ../bin/closure-compiler-recursive compressed
+diff compressed expected-output
