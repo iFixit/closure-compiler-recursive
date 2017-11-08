@@ -3,3 +3,7 @@ Closure Compiler Recursive
 
 A thin wrapper around Google's closure-compiler that minimizes time and memory
 when compiling the contents of a directory recursively.
+
+Usage:
+
+    bin/closure-compiler-recursive /path/to/closure-compiler.jar /directory/to/compress
