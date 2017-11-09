@@ -16,7 +16,7 @@ import com.google.javascript.jscomp.CommandLineRunner;
 import com.google.javascript.jscomp.CompilerOptions.LanguageMode;
 
 public class ClosureCompilerRecursive {
-   public static String compile(String filename, CompilerOptions options) {
+   public String compile(String filename, CompilerOptions options) {
       Compiler compiler = new Compiler();
 
       List<SourceFile> list = null;
@@ -36,8 +36,12 @@ public class ClosureCompilerRecursive {
    }
 
    public static void main(String[] args) throws IOException {
+      ClosureCompilerRecursive ccr = new ClosureCompilerRecursive();
+      ccr.compileDirectory(args[0]);
+   }
+
+   protected void compileDirectory(String dir) throws IOException {
       CompilerOptions options = getOptions();
-      String dir = args[0];
       for(Path file : getFilesFromDirectory(dir)) {
          String code = compile(file.toString(), options);
          PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(file.toString())));
@@ -47,7 +51,7 @@ public class ClosureCompilerRecursive {
       }
    }
 
-   protected static Path[] getFilesFromDirectory(String dir) throws IOException {
+   protected Path[] getFilesFromDirectory(String dir) throws IOException {
       return Files.find(
          Paths.get(dir),
          Integer.MAX_VALUE,
@@ -55,7 +59,7 @@ public class ClosureCompilerRecursive {
          .toArray(Path[]::new);
    }
 
-   protected static CompilerOptions getOptions() {
+   protected CompilerOptions getOptions() {
       CompilerOptions options = new CompilerOptions();
 
       // See :
@@ -71,4 +75,3 @@ public class ClosureCompilerRecursive {
       return options;
    }
 }
-
