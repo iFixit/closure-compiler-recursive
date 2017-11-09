@@ -47,12 +47,16 @@ public class ClosureCompilerRecursive {
    protected void compileDirectory(String dir) throws IOException {
       CompilerOptions options = getOptions();
       for(Path file : getFilesFromDirectory(dir)) {
-         String code = compile(file.toString(), options);
-         PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(file.toString())));
-         writer.println(code);
-         writer.close();
+         String compressedSource = compile(file.toString(), options);
+         writeFile(file, compressedSource);
          System.gc();
       }
+   }
+
+   protected void writeFile(Path file, String contents) throws IOException {
+      PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(file.toString())));
+      writer.println(contents);
+      writer.close();
    }
 
    protected Path[] getFilesFromDirectory(String dir) throws IOException {
