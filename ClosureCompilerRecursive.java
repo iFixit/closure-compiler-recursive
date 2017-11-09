@@ -26,7 +26,8 @@ public class ClosureCompilerRecursive {
          CommandLineRunner
          .getBuiltinExterns(CompilerOptions.Environment.BROWSER);
       } catch (IOException e) {
-          System.out.println("Exception raised");
+          System.out.println(e.getMessage());
+          System.exit(1);
       }
 
       list.add(SourceFile.fromFile(filename));
