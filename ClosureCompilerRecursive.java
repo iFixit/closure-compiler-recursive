@@ -41,11 +41,11 @@ public class ClosureCompilerRecursive {
 
    public static void main(String[] args) throws IOException {
       ClosureCompilerRecursive ccr = new ClosureCompilerRecursive();
-      ccr.compileDirectory(args[0]);
+      ccr.compileDirectory(Paths.get(args[0]));
       System.exit(Math.min(ccr.errorCount, 127));
    }
 
-   protected void compileDirectory(String dir) throws IOException {
+   protected void compileDirectory(Path dir) throws IOException {
       for(Path file : getFilesFromDirectory(dir)) {
          String compressedSource = compile(file);
          writeFile(file, compressedSource);
@@ -59,9 +59,9 @@ public class ClosureCompilerRecursive {
       writer.close();
    }
 
-   protected Path[] getFilesFromDirectory(String dir) throws IOException {
+   protected Path[] getFilesFromDirectory(Path dir) throws IOException {
       return Files.find(
-         Paths.get(dir),
+         dir,
          Integer.MAX_VALUE,
            (path, fileAttr) -> fileAttr.isRegularFile()
                                && path.toString().endsWith(".js"))
