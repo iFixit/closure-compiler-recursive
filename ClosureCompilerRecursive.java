@@ -5,6 +5,7 @@ import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.Path;
+import static java.nio.charset.StandardCharsets.UTF_8;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -18,7 +19,7 @@ import com.google.javascript.jscomp.CompilerOptions.LanguageMode;
 public class ClosureCompilerRecursive {
    protected Integer errorCount = 0;
 
-   public String compile(String filename, CompilerOptions options) {
+   public String compile(Path filename) {
       Compiler compiler = new Compiler();
 
       List<SourceFile> list = null;
@@ -32,8 +33,8 @@ public class ClosureCompilerRecursive {
           System.exit(1);
       }
 
-      list.add(SourceFile.fromFile(filename));
-      compiler.compile(new ArrayList<SourceFile>(), list, options);
+      list.add(SourceFile.fromPath(filename, UTF_8));
+      compiler.compile(new ArrayList<SourceFile>(), list, getOptions());
       errorCount += compiler.getResult().errors.length;
       return compiler.toSource();
    }
@@ -45,9 +46,8 @@ public class ClosureCompilerRecursive {
    }
 
    protected void compileDirectory(String dir) throws IOException {
-      CompilerOptions options = getOptions();
       for(Path file : getFilesFromDirectory(dir)) {
-         String compressedSource = compile(file.toString(), options);
+         String compressedSource = compile(file);
          writeFile(file, compressedSource);
          System.gc();
       }
