@@ -2,12 +2,14 @@ import java.io.IOException;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.PrintWriter;
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.file.Path;
-import static java.nio.charset.StandardCharsets.UTF_8;
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.stream.Stream;
 
 import com.google.javascript.jscomp.CompilationLevel;
 import com.google.javascript.jscomp.Compiler;
@@ -19,7 +21,7 @@ import com.google.javascript.jscomp.CompilerOptions.LanguageMode;
 public class ClosureCompilerRecursive {
    protected Integer errorCount = 0;
 
-   public String compile(Path filename) {
+   public String compile(File file) {
       Compiler compiler = new Compiler();
 
       List<SourceFile> list = null;
@@ -33,7 +35,7 @@ public class ClosureCompilerRecursive {
           System.exit(1);
       }
 
-      list.add(SourceFile.fromPath(filename, UTF_8));
+      list.add(SourceFile.fromFile(file.getPath()));
       compiler.compile(new ArrayList<SourceFile>(), list, getOptions());
       errorCount += compiler.getResult().errors.length;
       return compiler.toSource();
@@ -46,26 +48,29 @@ public class ClosureCompilerRecursive {
    }
 
    protected void compileDirectory(Path dir) throws IOException {
-      for(Path file : getFilesFromDirectory(dir)) {
+      for(File file : getFilesFromDirectory(dir)) {
          String compressedSource = compile(file);
          writeFile(file, compressedSource);
          System.gc();
       }
    }
 
-   protected void writeFile(Path file, String contents) throws IOException {
+   protected void writeFile(File file, String contents) throws IOException {
       PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(file.toString())));
       writer.println(contents);
       writer.close();
    }
 
-   protected Path[] getFilesFromDirectory(Path dir) throws IOException {
-      return Files.find(
+   protected File[] getFilesFromDirectory(Path dir) throws IOException {
+      File[] files = Files.find(
          dir,
          Integer.MAX_VALUE,
            (path, fileAttr) -> fileAttr.isRegularFile()
                                && path.toString().endsWith(".js"))
-         .toArray(Path[]::new);
+         .map((Path path) -> path.toFile())
+         .toArray(File[]::new);
+      Arrays.sort(files, (File f1, File f2) -> (int) (f2.length() - f1.length()));
+      return files;
    }
 
    protected CompilerOptions getOptions() {
