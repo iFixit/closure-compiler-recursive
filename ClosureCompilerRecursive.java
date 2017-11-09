@@ -63,7 +63,8 @@ public class ClosureCompilerRecursive {
       return Files.find(
          Paths.get(dir),
          Integer.MAX_VALUE,
-           (path, fileAttr) -> fileAttr.isRegularFile())
+           (path, fileAttr) -> fileAttr.isRegularFile()
+                               && path.toString().endsWith(".js"))
          .toArray(Path[]::new);
    }
 
