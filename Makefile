@@ -1,4 +1,4 @@
-default: ClosureCompilerRecursive.class
+default:
 	javac -Xlint:deprecation ClosureCompilerRecursive.java
 
 test:
