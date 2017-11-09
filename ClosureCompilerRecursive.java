@@ -16,6 +16,8 @@ import com.google.javascript.jscomp.CommandLineRunner;
 import com.google.javascript.jscomp.CompilerOptions.LanguageMode;
 
 public class ClosureCompilerRecursive {
+   protected Integer errorCount = 0;
+
    public String compile(String filename, CompilerOptions options) {
       Compiler compiler = new Compiler();
 
@@ -32,12 +34,14 @@ public class ClosureCompilerRecursive {
 
       list.add(SourceFile.fromFile(filename));
       compiler.compile(new ArrayList<SourceFile>(), list, options);
+      errorCount += compiler.getResult().errors.length;
       return compiler.toSource();
    }
 
    public static void main(String[] args) throws IOException {
       ClosureCompilerRecursive ccr = new ClosureCompilerRecursive();
       ccr.compileDirectory(args[0]);
+      System.exit(Math.min(ccr.errorCount, 127));
    }
 
    protected void compileDirectory(String dir) throws IOException {

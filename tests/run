@@ -1,8 +1,24 @@
 #!/bin/bash
+run() {
+   set -e
+   CLASSPATH=../closure-compiler-v20170910.jar ../bin/closure-compiler-recursive compressed
+}
+
+fail () {
+   echo "FAIL"
+   exit 1
+}
 
 set -e
 rm -rf compressed || true
 cp -r input compressed
-CLASSPATH=../closure-compiler-v20170910.jar ../bin/closure-compiler-recursive compressed
+
+run || fail
 diff --recursive compressed expected-output
-echo "Passed Tests!"
+echo "Passed Compression Test!"
+
+echo "not valid javascript" > compressed/invalid.js
+(! run) || fail
+echo "Passed Error Test!"
+
+echo "Passed All Tests"
