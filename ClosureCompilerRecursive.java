@@ -2,6 +2,9 @@ import java.io.IOException;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.PrintWriter;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.nio.file.Path;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -33,13 +36,22 @@ public class ClosureCompilerRecursive {
 
    public static void main(String[] args) throws IOException {
       CompilerOptions options = getOptions();
-      for(String filename : args) {
-         String code = compile(filename, options);
-         PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(filename + ".out")));
+      String dir = args[0];
+      for(Path file : getFilesFromDirectory(dir)) {
+         String code = compile(file.toString(), options);
+         PrintWriter writer = new PrintWriter(new BufferedWriter(new FileWriter(file.toString())));
          writer.println(code);
          writer.close();
          System.gc();
       }
+   }
+
+   protected static Path[] getFilesFromDirectory(String dir) throws IOException {
+      return Files.find(
+         Paths.get(dir),
+         Integer.MAX_VALUE,
+           (path, fileAttr) -> fileAttr.isRegularFile())
+         .toArray(Path[]::new);
    }
 
    protected static CompilerOptions getOptions() {

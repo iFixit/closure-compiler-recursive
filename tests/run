@@ -1,6 +1,8 @@
-#!/bin/bash -ex
+#!/bin/bash
 
+set -e
 rm -rf compressed || true
 cp -r input compressed
 CLASSPATH=../closure-compiler-v20170910.jar ../bin/closure-compiler-recursive compressed
-diff compressed expected-output
+diff --recursive compressed expected-output
+echo "Passed Tests!"
