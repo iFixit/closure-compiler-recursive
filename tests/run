@@ -1,6 +1,6 @@
 #!/bin/bash
 run() {
-   CLASSPATH=../closure-compiler-v20170910.jar ../bin/closure-compiler-recursive "$@"
+   ../bin/closure-compiler-recursive "$@"
 }
 
 assert () {
