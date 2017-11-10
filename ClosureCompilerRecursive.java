@@ -75,6 +75,7 @@ public class ClosureCompilerRecursive {
          if (writeFiles) {
             writeFile(file, compressedSource);
          }
+         // Without this, we've seen memory usage nearly double.
          System.gc();
       }
    }
@@ -101,6 +102,8 @@ public class ClosureCompilerRecursive {
                                && path.toString().endsWith(".js"))
          .map((Path path) -> path.toFile())
          .toArray(File[]::new);
+      // Sorting by biggest first reduces memory usage by ~50% depending on the
+      // size difference in your files.
       Arrays.sort(files, (File f1, File f2) -> (int) (f2.length() - f1.length()));
       return files;
    }
@@ -108,9 +111,6 @@ public class ClosureCompilerRecursive {
    protected CompilerOptions getOptions() {
       CompilerOptions options = new CompilerOptions();
 
-      // See :
-      // closure-compiler/src/com/google/javascript/jscomp/CompilerOptions.java
-      // lines 2864-2896
       options.setLanguageIn(LanguageMode.ECMASCRIPT_2015);
       options.setLanguageOut(LanguageMode.ECMASCRIPT5_STRICT);
 
