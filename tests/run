@@ -1,24 +1,45 @@
 #!/bin/bash
 run() {
-   set -e
-   CLASSPATH=../closure-compiler-v20170910.jar ../bin/closure-compiler-recursive compressed
+   CLASSPATH=../closure-compiler-v20170910.jar ../bin/closure-compiler-recursive "$@"
 }
 
-fail () {
-   echo "FAIL"
-   exit 1
+assert () {
+   code="$?"
+   test_name="$1"
+   if [ "$code" = 0 ]; then
+      echo "Passed $test_name Test !"
+   else
+      echo "FAILED $test_name Test !"
+      exit 1
+   fi
 }
 
 set -e
 rm -rf compressed || true
 cp -r input compressed
+set +e
 
-run || fail
-diff --recursive compressed expected-output
-echo "Passed Compression Test!"
+! run --not-valid-option ./compressed
+assert "Bad arguments"
+
+! run
+assert "No arguments"
+
+run --validate-syntax ./compressed
+assert "Syntax validation"
+
+diff --recursive compressed input
+assert "Syntax validation no-op"
 
 echo "not valid javascript" > compressed/invalid.js
-(! run) || fail
-echo "Passed Error Test!"
+! run --validate-syntax ./compressed
+assert "Syntax error"
+
+rm compressed/invalid.js
+run ./compressed
+assert "Compression"
+
+diff --recursive compressed expected-output
+assert "Compressed output"
 
 echo "Passed All Tests"

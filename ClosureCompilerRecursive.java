@@ -21,6 +21,7 @@ import com.google.javascript.jscomp.CompilerOptions.LanguageMode;
 public class ClosureCompilerRecursive {
    protected Path directory;
    protected Integer errorCount = 0;
+   protected Boolean writeFiles = true;
 
    protected String compile(File file) {
       Compiler compiler = new Compiler();
@@ -53,6 +54,9 @@ public class ClosureCompilerRecursive {
       String dir = null;
       if (args.length == 1) {
          dir = args[0];
+      } else if (args.length == 2 && args[0].equals("--validate-syntax")) {
+         ccr.validateSyntaxOnly();
+         dir = args[1];
       } else {
          printHelp();
       }
@@ -61,16 +65,22 @@ public class ClosureCompilerRecursive {
    }
 
    protected static void printHelp() {
-      System.out.println("Usage: closure-compiler-recursive /path/to/directory");
+      System.out.println("Usage: closure-compiler-recursive [--validate-syntax] /path/to/directory");
       System.exit(1);
    }
 
    public void compileDirectory() throws IOException {
       for(File file : getFilesFromDirectory()) {
          String compressedSource = compile(file);
-         writeFile(file, compressedSource);
+         if (writeFiles) {
+            writeFile(file, compressedSource);
+         }
          System.gc();
       }
+   }
+
+   public void validateSyntaxOnly() {
+      writeFiles = false;
    }
 
    public void setDirectory(Path dir) {
