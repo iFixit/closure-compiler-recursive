@@ -20,8 +20,8 @@ import com.google.javascript.jscomp.CompilerOptions.LanguageMode;
 
 public class ClosureCompilerRecursive {
    protected Path directory;
-   protected Integer errorCount = 0;
-   protected Boolean writeFiles = true;
+   protected int errorCount = 0;
+   protected boolean writeFiles = true;
 
    protected String compile(File file) {
       Compiler compiler = new Compiler();
