@@ -19,9 +19,10 @@ import com.google.javascript.jscomp.CommandLineRunner;
 import com.google.javascript.jscomp.CompilerOptions.LanguageMode;
 
 public class ClosureCompilerRecursive {
+   protected Path directory;
    protected Integer errorCount = 0;
 
-   public String compile(File file) {
+   protected String compile(File file) {
       Compiler compiler = new Compiler();
 
       List<SourceFile> list = null;
@@ -43,16 +44,37 @@ public class ClosureCompilerRecursive {
 
    public static void main(String[] args) throws IOException {
       ClosureCompilerRecursive ccr = new ClosureCompilerRecursive();
-      ccr.compileDirectory(Paths.get(args[0]));
+      setOptionsFromArgs(ccr, args);
+      ccr.compileDirectory();
       System.exit(Math.min(ccr.errorCount, 127));
    }
 
-   protected void compileDirectory(Path dir) throws IOException {
-      for(File file : getFilesFromDirectory(dir)) {
+   protected static void setOptionsFromArgs(ClosureCompilerRecursive ccr, String[] args) {
+      String dir = null;
+      if (args.length == 1) {
+         dir = args[0];
+      } else {
+         printHelp();
+      }
+
+      ccr.setDirectory(Paths.get(dir));
+   }
+
+   protected static void printHelp() {
+      System.out.println("Usage: closure-compiler-recursive /path/to/directory");
+      System.exit(1);
+   }
+
+   public void compileDirectory() throws IOException {
+      for(File file : getFilesFromDirectory()) {
          String compressedSource = compile(file);
          writeFile(file, compressedSource);
          System.gc();
       }
+   }
+
+   public void setDirectory(Path dir) {
+      directory = dir;
    }
 
    protected void writeFile(File file, String contents) throws IOException {
@@ -61,9 +83,9 @@ public class ClosureCompilerRecursive {
       writer.close();
    }
 
-   protected File[] getFilesFromDirectory(Path dir) throws IOException {
+   protected File[] getFilesFromDirectory() throws IOException {
       File[] files = Files.find(
-         dir,
+         directory,
          Integer.MAX_VALUE,
            (path, fileAttr) -> fileAttr.isRegularFile()
                                && path.toString().endsWith(".js"))
