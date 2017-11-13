@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.stream.Stream;
+import java.util.logging.Level;
 
 import com.google.javascript.jscomp.CompilationLevel;
 import com.google.javascript.jscomp.Compiler;
@@ -25,6 +26,10 @@ public class ClosureCompilerRecursive {
 
    protected String compile(File file) {
       Compiler compiler = new Compiler();
+      // Only log actual errors (that cause failures), be quiet about warnings.
+      // Without this, the tool may produce megabytes of warnings mixed in with
+      // only one error.
+      compiler.setLoggingLevel(Level.SEVERE);
 
       List<SourceFile> list = null;
 
