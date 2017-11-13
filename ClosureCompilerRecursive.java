@@ -117,7 +117,7 @@ public class ClosureCompilerRecursive {
       CompilerOptions options = new CompilerOptions();
 
       options.setLanguageIn(LanguageMode.ECMASCRIPT_2015);
-      options.setLanguageOut(LanguageMode.ECMASCRIPT5_STRICT);
+      options.setLanguageOut(LanguageMode.ECMASCRIPT5);
 
       CompilationLevel
           .SIMPLE_OPTIMIZATIONS
