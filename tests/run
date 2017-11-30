@@ -1,0 +1,45 @@
+#!/bin/bash
+run() {
+   ../bin/closure-compiler-recursive "$@"
+}
+
+assert () {
+   code="$?"
+   test_name="$1"
+   if [ "$code" = 0 ]; then
+      echo "Passed $test_name Test !"
+   else
+      echo "FAILED $test_name Test !"
+      exit 1
+   fi
+}
+
+set -e
+rm -rf compressed || true
+cp -r input compressed
+set +e
+
+! run --not-valid-option ./compressed
+assert "Bad arguments"
+
+! run
+assert "No arguments"
+
+run --validate-syntax ./compressed
+assert "Syntax validation"
+
+diff --recursive compressed input
+assert "Syntax validation no-op"
+
+echo "not valid javascript" > compressed/invalid.js
+! run --validate-syntax ./compressed
+assert "Syntax error"
+
+rm compressed/invalid.js
+run ./compressed
+assert "Compression"
+
+diff --recursive compressed expected-output
+assert "Compressed output"
+
+echo "Passed All Tests"
